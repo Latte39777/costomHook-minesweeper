@@ -8,6 +8,87 @@
   padding: 0 0.5rem;
 }
 
+.board {
+  display: flex;
+  flex-wrap: wrap;
+  width: 350px;
+  height: 450px;
+  padding: 0 0.5rem;
+  background-color: rgb(100 100 100);
+}
+
+.timer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 132px;
+  height: 70px;
+  margin-top: 10px;
+  background-color: rgb(80 80 80);
+  border: 1px solid black;
+}
+
+.bombnumber {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 132px;
+  height: 70px;
+  margin-top: 10px;
+  margin-right: 10px;
+  background-color: rgb(80 80 80);
+  border: 1px solid black;
+}
+
+.face {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  margin-top: 20px;
+  margin-right: 10px;
+  background-color: rgb(80 80 80);
+  border: 1px solid black;
+}
+
+.newboard {
+  display: flex;
+  flex-wrap: wrap;
+  width: 350px;
+  height: 350px;
+  background-color: rgb(80 80 80);
+  border: 1px solid black;
+}
+
+.incell {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36.9687px;
+  height: 38.8px;
+  background-color: rgb(235 0 0);
+  border: 1px solid black;
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36.9687px;
+  height: 38.8px;
+  background-color: rgb(120 120 120);
+  border: 1px solid black;
+}
+
+.stone {
+  display: flex;
+  width: 36.9687px;
+  height: 38.8px;
+  background-color: rgb(100 100 100);
+}
+
 .sampleStyle {
   width: 30px;
   height: 30px;
