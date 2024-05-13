@@ -22,6 +22,9 @@ const numberMap = (bombMap: number[][]) => {
   let count = 0;
   for (let a = 0; a < 9; a++) {
     for (let b = 0; b < 9; b++) {
+      if (bombMap[b][a] === -2) {
+        bombMap[b][a] = 0;
+      }
       for (const direction of directions) {
         const dx = direction[0];
         const dy = direction[1];
@@ -64,8 +67,16 @@ const bombPlace = (x: number, y: number, bombMap: number[][]) => {
   return bombMap;
 };
 
+const clickPlace = (x: number, y: number, firstMap: number[][]) => {
+  if (firstMap[y][x] === 0) {
+    console.log('click', y, x);
+    firstMap[y][x] = 1;
+  }
+  return firstMap;
+};
+
 const Home = () => {
-  const [bombMap, userInput] = useState([
+  const [firstMap, userClick] = useState([
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -77,12 +88,29 @@ const Home = () => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
 
+  const [bombMap, userInput] = useState([
+    [-2, -2, -2, -2, -2, -2, -2, -2, -2],
+    [-2, -2, -2, -2, -2, -2, -2, -2, -2],
+    [-2, -2, -2, -2, -2, -2, -2, -2, -2],
+    [-2, -2, -2, -2, -2, -2, -2, -2, -2],
+    [-2, -2, -2, -2, -2, -2, -2, -2, -2],
+    [-2, -2, -2, -2, -2, -2, -2, -2, -2],
+    [-2, -2, -2, -2, -2, -2, -2, -2, -2],
+    [-2, -2, -2, -2, -2, -2, -2, -2, -2],
+    [-2, -2, -2, -2, -2, -2, -2, -2, -2],
+  ]);
+
   const clickHandler = (x: number, y: number) => {
-    const newBoard = structuredClone(bombMap);
-    const newbombPlaed = bombPlace(x, y, newBoard);
-    const newnumber = numberMap(newbombPlaed);
-    userInput(newnumber);
-    // userInput(newbombPlaed);
+    if (bombMap[y][x] === -2) {
+      const newBoard = structuredClone(bombMap);
+      const newbombPlaed = bombPlace(x, y, newBoard);
+      const newnumber = numberMap(newbombPlaed);
+      userInput(newnumber);
+    }
+
+    const clickBord = structuredClone(firstMap);
+    const cllckPlaced = clickPlace(x, y, clickBord);
+    userClick(cllckPlaced);
   };
 
   return (
@@ -152,32 +180,40 @@ const Home = () => {
                     style={{ backgroundPosition: `-210px  0px` }}
                   />
                 )}
-                {/* <div
-                  className={styles.stone}
-                  style={{ background: color === 0 ? 'rgb(120 120 120)' : '#0000000' }}
-                /> */}
+                {/* {color === 0 && (
+                  <div
+                    className={styles.stone}
+                    style={{ background: color === 0 ? '#ff0000' : '#ffffff0' }}
+                  />
+                )} */}
               </div>
             )),
           )}
-
-          {/* {representBoard.map((row, y) =>
+          {firstMap.map((row, y) =>
             row.map((color, x) => (
               <div
-                className={styles.incell}
+                className={styles.cell}
                 key={`${x}-${y}`}
                 onClick={() => {
                   clickHandler(x, y);
                 }}
-              />
+              >
+                {color === 0 && (
+                  <button
+                    className={styles.stone}
+                    style={{ background: color === 0 ? '#ff0000' : '#ffffff0' }}
+                  />
+                )}
+              </div>
             )),
-          )} */}
+          )}
         </div>
       </div>
-      <div
+      {/* <div
         className={styles.sampleStyle}
         style={{ backgroundPosition: `{-30 * samplePos}px  0px` }}
       />
-      <button onClick={() => setSamplePos((p) => (p + 1) % 14)}>sample</button>
+      <button onClick={() => setSamplePos((p) => (p + 1) % 14)}>sample</button> */}
     </div>
   );
 };
