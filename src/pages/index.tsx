@@ -12,23 +12,28 @@ const directions = [
   [-1, 1],
 ];
 
-const ways = [
-  [0, 1],
-  [1, 0],
-  [0, -1],
-  [-1, 0],
-];
+const create2Darray = (width: number, hight: number, number: number) => {
+  const result = [];
+  for (let row = 0; row < hight; row++) {
+    const x = [];
+    for (let a = 0; a < width; a++) {
+      x.push(number);
+    }
+    result.push(x);
+  }
+  return result;
+};
 
-function getRandomCoordinates(): [number, number] {
-  const xs = Math.floor(Math.random() * 9);
-  const ys = Math.floor(Math.random() * 9);
+function getRandomCoordinates(levelchange: number[]): [number, number] {
+  const xs = Math.floor(Math.random() * levelchange[0]);
+  const ys = Math.floor(Math.random() * levelchange[1]);
   return [ys, xs];
 }
 
-const bombPlace = (x: number, y: number, bombMap: number[][]) => {
+const bombPlace = (x: number, y: number, bombMap: number[][], levelchange: number[]) => {
   const getBombPlace: [number, number][] = [];
-  while (getBombPlace.length < 10) {
-    const [ys, xs] = getRandomCoordinates();
+  while (getBombPlace.length < levelchange[2]) {
+    const [ys, xs] = getRandomCoordinates(levelchange);
     let exists = false;
     for (const [yb, xb] of getBombPlace) {
       if (xb === xs && yb === ys) {
@@ -45,10 +50,10 @@ const bombPlace = (x: number, y: number, bombMap: number[][]) => {
   return bombMap;
 };
 
-const numberMap = (bombMap: number[][]) => {
+const numberMap = (bombMap: number[][], levelchange: number[]) => {
   let count = 0;
-  for (let a = 0; a < 9; a++) {
-    for (let b = 0; b < 9; b++) {
+  for (let a = 0; a < levelchange[0]; a++) {
+    for (let b = 0; b < levelchange[1]; b++) {
       if (bombMap[b][a] === -2) {
         bombMap[b][a] = 0;
       }
@@ -60,7 +65,6 @@ const numberMap = (bombMap: number[][]) => {
           bombMap[b + dy][a + dx] === -1 &&
           bombMap[b][a] !== -1
         ) {
-          console.log('A', a, 'B', b, count);
           count++;
           continue;
         }
@@ -75,13 +79,9 @@ const numberMap = (bombMap: number[][]) => {
 };
 
 const clickPlace = (x: number, y: number, firstMap: number[][], numberPlaced: number[][]) => {
-  if (y >= 0 && y < firstMap.length) {
-    if (x >= 0 && x < firstMap[y].length) {
-      if (firstMap[y][x] === 0 && numberPlaced[y][x] !== 0) {
-        console.log('click', y, x);
-        firstMap[y][x] = 1;
-      }
-    }
+  if (firstMap[y][x] === 0 && numberPlaced[y][x] !== 0) {
+    console.log('click', y, x);
+    firstMap[y][x] = 1;
   }
   return firstMap;
 };
@@ -89,27 +89,25 @@ const clickPlace = (x: number, y: number, firstMap: number[][], numberPlaced: nu
 const cheackBlank = (x: number, y: number, firstMap: number[][], numberPlaced: number[][]) => {
   if (firstMap[y][x] === 0 && numberPlaced[y][x] === 0) {
     firstMap[y][x] = 1;
-    for (const way of ways) {
-      const xf = way[0];
-      const yf = way[1];
+    for (const direction of directions) {
+      const xf = direction[0];
+      const yf = direction[1];
       const newx = x + xf;
       const newy = y + yf;
       if (firstMap[y + yf] !== undefined && numberPlaced[y + yf][x + xf] === 0) {
         cheackBlank(newx, newy, firstMap, numberPlaced);
-      } else {
-        cheackBlank(x, y, firstMap, numberPlaced);
       }
     }
   }
   return firstMap;
 };
 
-const numberPlace = (firstMap: number[][], numberPlaced: number[][]) => {
-  for (let a = 0; a < 9; a++) {
-    for (let b = 0; b < 9; b++) {
-      for (const way of ways) {
-        const xf = way[0];
-        const yf = way[1];
+const numberPlace = (firstMap: number[][], numberPlaced: number[][], levelchange: number[]) => {
+  for (let a = 0; a < levelchange[0]; a++) {
+    for (let b = 0; b < levelchange[1]; b++) {
+      for (const direction of directions) {
+        const xf = direction[0];
+        const yf = direction[1];
         if (
           firstMap[b + yf] !== undefined &&
           firstMap[b + yf][a + xf] !== undefined &&
@@ -124,9 +122,26 @@ const numberPlace = (firstMap: number[][], numberPlaced: number[][]) => {
   return firstMap;
 };
 
+const gameOverMap = (bombMap: number[][], firstMap: number[][], levelchange: number[]) => {
+  for (let a = 0; a < levelchange[0]; a++) {
+    for (let b = 0; b < levelchange[1]; b++) {
+      if (firstMap[b][a] === 0) {
+        firstMap[b][a] = 10;
+        if (bombMap[b][a] === -1) {
+          firstMap[b][a] = 1;
+        }
+      }
+      if (firstMap[b][a] === 2 && bombMap[b][a] !== -1) {
+        bombMap[b][a] = 50;
+      }
+    }
+  }
+  return firstMap;
+};
+
 const Home = () => {
-  const [firstMap, userClick] = useState([
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  const [firstMap, setuserClick] = useState([
+    [2, 10, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -137,7 +152,7 @@ const Home = () => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
 
-  const [bombMap, userInput] = useState([
+  const [bombMap, setuserInput] = useState([
     [-2, -2, -2, -2, -2, -2, -2, -2, -2],
     [-2, -2, -2, -2, -2, -2, -2, -2, -2],
     [-2, -2, -2, -2, -2, -2, -2, -2, -2],
@@ -150,71 +165,135 @@ const Home = () => {
   ]);
 
   const [gameOver, setGameOver] = useState(false);
-  // let bombfinish = [[]];
+  const [levelchange, setlevelchange] = useState([9, 9, 10]);
+
   let bombfinish = structuredClone(bombMap);
-  const clickHandler = (x: number, y: number) => {
-    if (bombMap[y][x] === -2) {
-      const newBoard = structuredClone(bombMap);
-      const newbombPlaed = bombPlace(x, y, newBoard);
-      console.log('newbombPlaed', newbombPlaed);
-      const newnumber = numberMap(newbombPlaed);
-      console.log('newnumber', newnumber);
-      bombfinish = newnumber;
-      userInput(bombfinish);
-      // userInput(newnumber);
-    }
 
-    const clickBord = structuredClone(firstMap);
-    const cllckPlaced = clickPlace(x, y, clickBord, bombfinish);
-    console.log('cllckPlaced', cllckPlaced);
-    const cheackedBlank = cheackBlank(x, y, cllckPlaced, bombfinish);
-    console.log('numberPlaced', cheackedBlank);
-    const numberPlaced = numberPlace(cheackedBlank, bombfinish);
-    console.log('numberPlaced', numberPlaced);
-    userClick(numberPlaced);
-
-    // const clickBord = structuredClone(firstMap);
-    // const cllckPlaced = clickPlace(x, y, clickBord, bombMap);
-    // console.log('cllckPlaced', cllckPlaced);
-    // const cheackedBlank = cheackBlank(x, y, cllckPlaced, bombMap);
-    // console.log('numberPlaced', cheackedBlank);
-    // const numberPlaced = numberPlace(cheackedBlank, bombMap);
-    // console.log('numberPlaced', numberPlaced);
-    // userClick(numberPlaced);
-
-    if (bombMap[y][x] === -1) {
-      setGameOver(true);
-      alert('Game Over!');
+  const levelboard = (level: number) => {
+    if (level === 0) {
+      setlevelchange([9, 9, 10]);
+      setuserClick(create2Darray(9, 9, 0));
+      setuserInput(create2Darray(9, 9, -2));
+    } else if (level === 1) {
+      setlevelchange([16, 16, 40]);
+      setuserClick(create2Darray(16, 16, 0));
+      setuserInput(create2Darray(16, 16, -2));
+    } else if (level === 2) {
+      setlevelchange([30, 16, 99]);
+      setuserClick(create2Darray(30, 16, 0));
+      setuserInput(create2Darray(30, 16, -2));
     }
   };
 
   const handleReload = () => {
-    window.location.reload();
+    const numbercleaned = structuredClone(firstMap);
+    const bombcleaned = structuredClone(bombMap);
+    if (bombMap !== undefined && firstMap !== undefined) {
+      for (let i = 0; i < bombMap.length; i++) {
+        for (let j = 0; j < bombMap[i].length; j++) {
+          bombcleaned[i][j] = -2;
+          numbercleaned[i][j] = 0;
+        }
+      }
+    }
+    const gameOver = false;
+    setGameOver(gameOver);
+    setuserClick(numbercleaned);
+    setuserInput(bombcleaned);
   };
+
+  const rightClick = (event: React.MouseEvent<HTMLDivElement>, x: number, y: number) => {
+    if (gameOver === false) {
+      const rightClicked = structuredClone(firstMap);
+      event.preventDefault();
+      if (rightClicked[y][x] === 0) {
+        rightClicked[y][x] = 2;
+      } else if (rightClicked[y][x] === 2) {
+        rightClicked[y][x] = 0;
+      }
+      setuserClick(rightClicked);
+    }
+  };
+
+  const clickHandler = (x: number, y: number) => {
+    if (firstMap[y][x] !== 100 && firstMap[y][x] !== 2) {
+      if (bombMap[y][x] === -2) {
+        const newBoard = structuredClone(bombMap);
+        const newbombPlaed = bombPlace(x, y, newBoard, levelchange);
+        const newnumber = numberMap(newbombPlaed, levelchange);
+        bombfinish = newnumber;
+        setuserInput(bombfinish);
+      }
+      if (firstMap[y][x] === 0 && bombMap[y][x] !== -1) {
+        const clickBord = structuredClone(firstMap);
+        const cllckPlaced = clickPlace(x, y, clickBord, bombfinish);
+        const cheackedBlank = cheackBlank(x, y, cllckPlaced, bombfinish);
+        const numberPlaced = numberPlace(cheackedBlank, bombfinish, levelchange);
+        setuserClick(numberPlaced);
+      }
+      if (firstMap[y][x] === 0 && bombMap[y][x] === -1) {
+        const gameOverBoard = structuredClone(firstMap);
+        const gameOvered = gameOverMap(bombMap, gameOverBoard, levelchange);
+        setGameOver(true);
+        setuserClick(gameOvered);
+        console.log(gameOvered);
+        // alert('Game Over!');
+      }
+    }
+  };
+  // oncontextmenu
 
   return (
     <div className={styles.container}>
-      <div className={styles.board}>
+      <div className={styles.levelboard}>
+        <button
+          className={styles.first}
+          onClick={() => {
+            handleReload();
+            levelboard(0);
+          }}
+        >
+          初級
+        </button>
+        <button
+          className={styles.second}
+          onClick={() => {
+            handleReload();
+            levelboard(1);
+          }}
+        >
+          中級
+        </button>
+        <button
+          className={styles.therd}
+          onClick={() => {
+            handleReload();
+            levelboard(2);
+          }}
+        >
+          上級
+        </button>
+      </div>
+      <div
+        className={styles.board}
+        style={{ width: 37 * levelchange[0] + 27, height: 37 * levelchange[1] + 127 }}
+      >
         {gameOver && <div className={styles.gameOverAlert} />}
-        <div className={styles.bombnumber} />
-        <div className={styles.face}>
-          {gameOver === false && (
+        <div style={{ display: 'flex', alignItems: 'center', width: 37 * levelchange[0] }}>
+          <div className={styles.bombnumber}>{levelchange[2]}</div>
+          <div className={styles.face}>
             <button
               className={styles.sampleStyle}
-              style={{ backgroundPosition: `-330px  0px` }}
+              style={{ backgroundPosition: gameOver ? `-390px  0px` : `-330px  0px` }}
               onClick={handleReload}
             />
-          )}
-          {gameOver === true && (
-            <button
-              className={styles.sampleStyle}
-              style={{ backgroundPosition: `-390px  0px` }}
-              onClick={handleReload}
-            />
-          )}
+          </div>
+          <div className={styles.timer} />
         </div>
-        <div className={styles.timer} />
-        <div className={styles.newboard}>
+        <div
+          className={styles.newboard}
+          style={{ width: 37 * levelchange[0], height: 37 * levelchange[1] }}
+        >
           {bombMap.map((row, y) =>
             row.map((color, x) => (
               <div
@@ -224,17 +303,24 @@ const Home = () => {
                   clickHandler(x, y);
                 }}
               >
-                {firstMap[y][x] === 0 && (
+                {(firstMap[y][x] === 0 || firstMap[y][x] === 10) && (
                   <div
                     className={styles.stone}
-                    style={{ background: color === 0 ? '#ff0000' : '#ffffff0' }}
+                    style={{ background: color === 1 ? '#ff00000' : 'rgb(0 255 00)' }}
+                    onContextMenu={(event) => rightClick(event, x, y)}
                   />
                 )}
-                {firstMap[y][x] === 0 && (
+                {(firstMap[y][x] === 2 || firstMap[y][x] === 50) && (
                   <div
-                    className={styles.sampleStyle}
-                    style={{ backgroundPosition: `-270px  0px` }}
-                  />
+                    className={styles.stone}
+                    style={{ background: color === 50 ? '#f2ff00' : '#ffffff0' }}
+                  >
+                    <div
+                      className={styles.sampleStyle}
+                      style={{ backgroundPosition: `-270px  0px` }}
+                      onContextMenu={(event) => rightClick(event, x, y)}
+                    />
+                  </div>
                 )}
                 {color === -1 && (
                   <div
