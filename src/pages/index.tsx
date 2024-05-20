@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './index.module.css';
 
 const directions = [
@@ -41,7 +41,7 @@ const bombPlace = (x: number, y: number, bombMap: number[][], levelchange: numbe
         break;
       }
     }
-    if (!exists && x !== xs && y !== ys) {
+    if (!exists && !(x === xs && y === ys)) {
       console.log('ボマー', xs, ys);
       getBombPlace.push([ys, xs]);
       bombMap[ys][xs] = -1;
@@ -87,7 +87,7 @@ const clickPlace = (x: number, y: number, firstMap: number[][], numberPlaced: nu
 };
 
 const cheackBlank = (x: number, y: number, firstMap: number[][], numberPlaced: number[][]) => {
-  if (firstMap[y][x] === 0 && numberPlaced[y][x] === 0) {
+  if ((firstMap[y][x] === 0 || firstMap[y][x] === 2) && numberPlaced[y][x] === 0) {
     firstMap[y][x] = 1;
     for (const direction of directions) {
       const xf = direction[0];
@@ -139,9 +139,20 @@ const gameOverMap = (bombMap: number[][], firstMap: number[][], levelchange: num
   return firstMap;
 };
 
+// const Timer = () => {
+//   const [isTimeCount, setTimeCount] = useState(0);
+//   useEffect(() => {
+//     const countdown = setInterval(() => {
+//       setTimeCount((timeCount) => timeCount + 1);
+//     }, 1000);
+//     return () => clearInterval(countdown);
+//   }, [setTimeCount]);
+//   return isTimeCount;
+// };
+
 const Home = () => {
   const [firstMap, setuserClick] = useState([
-    [2, 10, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -166,22 +177,38 @@ const Home = () => {
 
   const [gameOver, setGameOver] = useState(false);
   const [levelchange, setlevelchange] = useState([9, 9, 10]);
+  const [val, setVal] = useState([30, 10, 15]);
+  const [isCostom, setCostom] = useState(false);
+
+  const hanleChange = (index: number, value: number) => {
+    const newVal = structuredClone(val);
+    newVal[index] = value;
+    setVal(newVal);
+  };
 
   let bombfinish = structuredClone(bombMap);
 
   const levelboard = (level: number) => {
     if (level === 0) {
+      setCostom(false);
       setlevelchange([9, 9, 10]);
       setuserClick(create2Darray(9, 9, 0));
       setuserInput(create2Darray(9, 9, -2));
     } else if (level === 1) {
+      setCostom(false);
       setlevelchange([16, 16, 40]);
       setuserClick(create2Darray(16, 16, 0));
       setuserInput(create2Darray(16, 16, -2));
     } else if (level === 2) {
+      setCostom(false);
       setlevelchange([30, 16, 99]);
       setuserClick(create2Darray(30, 16, 0));
       setuserInput(create2Darray(30, 16, -2));
+    } else if (level === 3) {
+      setCostom(true);
+      setlevelchange([val[0], val[1], val[2]]);
+      setuserClick(create2Darray(val[0], val[1], 0));
+      setuserInput(create2Darray(val[0], val[1], -2));
     }
   };
 
@@ -216,8 +243,13 @@ const Home = () => {
   };
 
   const clickHandler = (x: number, y: number) => {
-    if (firstMap[y][x] !== 100 && firstMap[y][x] !== 2) {
+    if (
+      firstMap[y][x] !== 100 &&
+      firstMap[y][x] !== 2 &&
+      levelchange[2] !== firstMap.flat().filter((cell) => cell !== 1).length
+    ) {
       if (bombMap[y][x] === -2) {
+        // Timer();
         const newBoard = structuredClone(bombMap);
         const newbombPlaed = bombPlace(x, y, newBoard, levelchange);
         const newnumber = numberMap(newbombPlaed, levelchange);
@@ -233,15 +265,14 @@ const Home = () => {
       }
       if (firstMap[y][x] === 0 && bombMap[y][x] === -1) {
         const gameOverBoard = structuredClone(firstMap);
+        bombMap[y][x] = -100;
         const gameOvered = gameOverMap(bombMap, gameOverBoard, levelchange);
         setGameOver(true);
         setuserClick(gameOvered);
-        console.log(gameOvered);
         // alert('Game Over!');
       }
     }
   };
-  // oncontextmenu
 
   return (
     <div className={styles.container}>
@@ -273,6 +304,52 @@ const Home = () => {
         >
           上級
         </button>
+        <button
+          className={styles.costom}
+          onClick={() => {
+            handleReload();
+            levelboard(3);
+          }}
+        >
+          カスタム
+        </button>
+        <div style={{ display: 'flex', visibility: isCostom ? 'visible' : 'hidden' }}>
+          <div>
+            <input
+              type="number"
+              value={val[0]}
+              onChange={(e) => hanleChange(0, parseInt(e.target.value))}
+              style={{ width: '50px' }}
+            />
+          </div>
+          <div>
+            <input
+              type="number"
+              value={val[1]}
+              onChange={(e) => hanleChange(1, parseInt(e.target.value))}
+              style={{ width: '50px' }}
+            />
+          </div>
+          <div>
+            <input
+              type="number"
+              value={val[2]}
+              onChange={(e) => hanleChange(2, parseInt(e.target.value))}
+              style={{ width: '50px' }}
+            />
+          </div>
+          {val[0] * val[1] >= val[2] && (
+            <button
+              className={styles.update}
+              onClick={() => {
+                handleReload();
+                levelboard(3);
+              }}
+            >
+              更新
+            </button>
+          )}
+        </div>
       </div>
       <div
         className={styles.board}
@@ -280,11 +357,19 @@ const Home = () => {
       >
         {gameOver && <div className={styles.gameOverAlert} />}
         <div style={{ display: 'flex', alignItems: 'center', width: 37 * levelchange[0] }}>
-          <div className={styles.bombnumber}>{levelchange[2]}</div>
+          <div className={styles.bombnumber}>
+            {levelchange[2] - firstMap.flat().filter((cell) => cell === 2).length}
+          </div>
           <div className={styles.face}>
             <button
               className={styles.sampleStyle}
-              style={{ backgroundPosition: gameOver ? `-390px  0px` : `-330px  0px` }}
+              style={{
+                backgroundPosition: gameOver
+                  ? `-390px 0px`
+                  : levelchange[2] === firstMap.flat().filter((cell) => cell !== 1).length
+                    ? `-360px 0px`
+                    : `-330px 0px`,
+              }}
               onClick={handleReload}
             />
           </div>
@@ -373,6 +458,14 @@ const Home = () => {
                     style={{ backgroundPosition: `-210px  0px` }}
                   />
                 )}
+                {bombMap[y][x] === -100 && (
+                  <div className={styles.stone} style={{ background: '#ff0000' }}>
+                    <div
+                      className={styles.sampleStyle}
+                      style={{ backgroundPosition: `-300px  0px` }}
+                    />
+                  </div>
+                )}
               </div>
             )),
           )}
@@ -381,5 +474,6 @@ const Home = () => {
     </div>
   );
 };
+// oncontextmenu
 
 export default Home;

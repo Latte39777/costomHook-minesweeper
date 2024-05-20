@@ -11,7 +11,7 @@
 .levelboard {
   display: flex;
   flex-wrap: wrap;
-  width: 350px;
+  width: 700px;
   height: 50px;
   padding: 0 0.5rem;
   background-color: blue;
@@ -53,6 +53,32 @@
   padding: 0 0.5rem;
   margin-top: 10px;
   margin-right: 10px;
+  background-color: rgb(100 100 100);
+}
+
+.costom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 30px;
+  padding: 0 0.5rem;
+  margin-top: 10px;
+  margin-right: 10px;
+  background-color: rgb(100 100 100);
+}
+
+.update {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 30px;
+  padding: 0 0.5rem;
+  margin-top: 10px;
+  margin-left: 20px;
   background-color: rgb(100 100 100);
 }
 
