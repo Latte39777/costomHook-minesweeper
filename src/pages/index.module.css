@@ -101,6 +101,8 @@
   width: 132px;
   height: 70px;
   margin-top: 10px;
+  font-size: 50px;
+  color: red;
   background-color: rgb(80 80 80);
   border: 1px solid black;
 }

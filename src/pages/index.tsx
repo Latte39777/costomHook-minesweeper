@@ -139,17 +139,6 @@ const gameOverMap = (bombMap: number[][], firstMap: number[][], levelchange: num
   return firstMap;
 };
 
-// const Timer = () => {
-//   const [isTimeCount, setTimeCount] = useState(0);
-//   useEffect(() => {
-//     const countdown = setInterval(() => {
-//       setTimeCount((timeCount) => timeCount + 1);
-//     }, 1000);
-//     return () => clearInterval(countdown);
-//   }, [setTimeCount]);
-//   return isTimeCount;
-// };
-
 const Home = () => {
   const [firstMap, setuserClick] = useState([
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -179,6 +168,38 @@ const Home = () => {
   const [levelchange, setlevelchange] = useState([9, 9, 10]);
   const [val, setVal] = useState([30, 10, 15]);
   const [isCostom, setCostom] = useState(false);
+  const [isTimeCount, setTimeCount] = useState(0);
+
+  const [timerId, setTimerId] = useState<number | null>(null); // タイマーID用のState
+
+  useEffect(() => {
+    return () => {
+      if (timerId !== null) {
+        clearInterval(timerId);
+      }
+    };
+  }, [timerId]);
+
+  useEffect(() => {
+    const isGameCleared = levelchange[2] === firstMap.flat().filter((cell) => cell !== 1).length;
+    if (gameOver || isGameCleared) {
+      if (timerId !== null) {
+        clearInterval(timerId);
+        // setTimerId(null);
+      }
+      // setTimeCount(0);
+    }
+  }, [gameOver, firstMap, levelchange, timerId]);
+
+  const startTimer = () => {
+    if (timerId !== null) {
+      clearInterval(timerId);
+    }
+    const id = window.setInterval(() => {
+      setTimeCount((prev) => prev + 1);
+    }, 1000);
+    setTimerId(id);
+  };
 
   const hanleChange = (index: number, value: number) => {
     const newVal = structuredClone(val);
@@ -223,14 +244,23 @@ const Home = () => {
         }
       }
     }
+    if (timerId !== null) {
+      clearInterval(timerId); // タイマーをリセット
+    }
     const gameOver = false;
+    setTimerId(null); // タイマーIDをリセット
+    setTimeCount(0);
+    // setGameOver(false);
     setGameOver(gameOver);
     setuserClick(numbercleaned);
     setuserInput(bombcleaned);
   };
 
   const rightClick = (event: React.MouseEvent<HTMLDivElement>, x: number, y: number) => {
-    if (gameOver === false) {
+    if (
+      gameOver !== true &&
+      levelchange[2] !== firstMap.flat().filter((cell) => cell !== 1).length
+    ) {
       const rightClicked = structuredClone(firstMap);
       event.preventDefault();
       if (rightClicked[y][x] === 0) {
@@ -249,13 +279,14 @@ const Home = () => {
       levelchange[2] !== firstMap.flat().filter((cell) => cell !== 1).length
     ) {
       if (bombMap[y][x] === -2) {
-        // Timer();
+        startTimer(); // タイマーを開始
         const newBoard = structuredClone(bombMap);
         const newbombPlaed = bombPlace(x, y, newBoard, levelchange);
         const newnumber = numberMap(newbombPlaed, levelchange);
         bombfinish = newnumber;
         setuserInput(bombfinish);
       }
+
       if (firstMap[y][x] === 0 && bombMap[y][x] !== -1) {
         const clickBord = structuredClone(firstMap);
         const cllckPlaced = clickPlace(x, y, clickBord, bombfinish);
@@ -269,7 +300,11 @@ const Home = () => {
         const gameOvered = gameOverMap(bombMap, gameOverBoard, levelchange);
         setGameOver(true);
         setuserClick(gameOvered);
-        // alert('Game Over!');
+        // if (timerId !== null) {
+        // clearInterval(timerId); // タイマーをリセット
+        // setTimeCount(0); // タイマー表示をリセット（オプション）
+        // }
+        // setTimerId(null);
       }
     }
   };
@@ -353,10 +388,18 @@ const Home = () => {
       </div>
       <div
         className={styles.board}
-        style={{ width: 37 * levelchange[0] + 27, height: 37 * levelchange[1] + 127 }}
+        style={{
+          width: levelchange[0] >= 9 ? 37 * levelchange[0] + 27 : 350,
+          height: 37 * levelchange[1] + 127,
+        }}
       >
-        {gameOver && <div className={styles.gameOverAlert} />}
-        <div style={{ display: 'flex', alignItems: 'center', width: 37 * levelchange[0] }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            width: levelchange[0] >= 9 ? 37 * levelchange[0] : 350,
+          }}
+        >
           <div className={styles.bombnumber}>
             {levelchange[2] - firstMap.flat().filter((cell) => cell === 2).length}
           </div>
@@ -373,7 +416,7 @@ const Home = () => {
               onClick={handleReload}
             />
           </div>
-          <div className={styles.timer} />
+          <div className={styles.timer}>{isTimeCount}</div>
         </div>
         <div
           className={styles.newboard}
