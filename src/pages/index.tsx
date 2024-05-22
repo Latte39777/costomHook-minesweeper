@@ -16,7 +16,7 @@ const create2Darray = (width: number, hight: number, number: number) => {
   const result = [];
   for (let row = 0; row < hight; row++) {
     const x = [];
-    for (let a = 0; a < width; a++) {
+    for (let rowcount = 0; rowcount < width; rowcount++) {
       x.push(number);
     }
     result.push(x);
@@ -50,7 +50,7 @@ const bombPlace = (x: number, y: number, bombMap: number[][], levelchange: numbe
   return bombMap;
 };
 
-const numberMap = (bombMap: number[][], levelchange: number[]) => {
+const numberPlace = (bombMap: number[][], levelchange: number[]) => {
   let count = 0;
   for (let a = 0; a < levelchange[0]; a++) {
     for (let b = 0; b < levelchange[1]; b++) {
@@ -78,44 +78,25 @@ const numberMap = (bombMap: number[][], levelchange: number[]) => {
   return bombMap;
 };
 
-const clickPlace = (x: number, y: number, firstMap: number[][], numberPlaced: number[][]) => {
-  if (firstMap[y][x] === 0 && numberPlaced[y][x] !== 0) {
+const cheackBlank = (x: number, y: number, firstMap: number[][], bombMap: number[][]) => {
+  if (firstMap[y][x] === 0 && bombMap[y][x] !== 0) {
     console.log('click', y, x);
     firstMap[y][x] = 1;
   }
-  return firstMap;
-};
-
-const cheackBlank = (x: number, y: number, firstMap: number[][], numberPlaced: number[][]) => {
-  if ((firstMap[y][x] === 0 || firstMap[y][x] === 2) && numberPlaced[y][x] === 0) {
+  if ((firstMap[y][x] === 0 || firstMap[y][x] === 2) && bombMap[y][x] === 0) {
     firstMap[y][x] = 1;
     for (const direction of directions) {
-      const xf = direction[0];
-      const yf = direction[1];
-      const newx = x + xf;
-      const newy = y + yf;
-      if (firstMap[y + yf] !== undefined && numberPlaced[y + yf][x + xf] === 0) {
-        cheackBlank(newx, newy, firstMap, numberPlaced);
+      if (
+        firstMap[y + direction[1]] !== undefined &&
+        bombMap[y + direction[1]][x + direction[0]] === 0
+      ) {
+        cheackBlank(x + direction[0], y + direction[1], firstMap, bombMap);
       }
-    }
-  }
-  return firstMap;
-};
-
-const numberPlace = (firstMap: number[][], numberPlaced: number[][], levelchange: number[]) => {
-  for (let a = 0; a < levelchange[0]; a++) {
-    for (let b = 0; b < levelchange[1]; b++) {
-      for (const direction of directions) {
-        const xf = direction[0];
-        const yf = direction[1];
-        if (
-          firstMap[b + yf] !== undefined &&
-          firstMap[b + yf][a + xf] !== undefined &&
-          numberPlaced[b][a] === 0 &&
-          firstMap[b][a] === 1
-        ) {
-          firstMap[b + yf][a + xf] = 1;
-        }
+      if (
+        firstMap[y + direction[1]] !== undefined &&
+        bombMap[y + direction[1]][x + direction[0]] !== 0
+      ) {
+        firstMap[y + direction[1]][x + direction[0]] = 1;
       }
     }
   }
@@ -168,26 +149,16 @@ const Home = () => {
   const [levelchange, setlevelchange] = useState([9, 9, 10]);
   const [val, setVal] = useState([30, 10, 15]);
   const [isCostom, setCostom] = useState(false);
+
   const [isTimeCount, setTimeCount] = useState(0);
-
   const [timerId, setTimerId] = useState<number | null>(null); // タイマーID用のState
-
-  useEffect(() => {
-    return () => {
-      if (timerId !== null) {
-        clearInterval(timerId);
-      }
-    };
-  }, [timerId]);
 
   useEffect(() => {
     const isGameCleared = levelchange[2] === firstMap.flat().filter((cell) => cell !== 1).length;
     if (gameOver || isGameCleared) {
       if (timerId !== null) {
         clearInterval(timerId);
-        // setTimerId(null);
       }
-      // setTimeCount(0);
     }
   }, [gameOver, firstMap, levelchange, timerId]);
 
@@ -206,8 +177,6 @@ const Home = () => {
     newVal[index] = value;
     setVal(newVal);
   };
-
-  let bombfinish = structuredClone(bombMap);
 
   const levelboard = (level: number) => {
     if (level === 0) {
@@ -247,11 +216,9 @@ const Home = () => {
     if (timerId !== null) {
       clearInterval(timerId); // タイマーをリセット
     }
-    const gameOver = false;
     setTimerId(null); // タイマーIDをリセット
     setTimeCount(0);
-    // setGameOver(false);
-    setGameOver(gameOver);
+    setGameOver(false);
     setuserClick(numbercleaned);
     setuserInput(bombcleaned);
   };
@@ -272,6 +239,8 @@ const Home = () => {
     }
   };
 
+  let bombfinish = structuredClone(bombMap);
+
   const clickHandler = (x: number, y: number) => {
     if (
       firstMap[y][x] !== 100 &&
@@ -282,17 +251,14 @@ const Home = () => {
         startTimer(); // タイマーを開始
         const newBoard = structuredClone(bombMap);
         const newbombPlaed = bombPlace(x, y, newBoard, levelchange);
-        const newnumber = numberMap(newbombPlaed, levelchange);
+        const newnumber = numberPlace(newbombPlaed, levelchange);
         bombfinish = newnumber;
         setuserInput(bombfinish);
       }
-
       if (firstMap[y][x] === 0 && bombMap[y][x] !== -1) {
         const clickBord = structuredClone(firstMap);
-        const cllckPlaced = clickPlace(x, y, clickBord, bombfinish);
-        const cheackedBlank = cheackBlank(x, y, cllckPlaced, bombfinish);
-        const numberPlaced = numberPlace(cheackedBlank, bombfinish, levelchange);
-        setuserClick(numberPlaced);
+        const cheackedBlank = cheackBlank(x, y, clickBord, bombfinish);
+        setuserClick(cheackedBlank);
       }
       if (firstMap[y][x] === 0 && bombMap[y][x] === -1) {
         const gameOverBoard = structuredClone(firstMap);
@@ -300,11 +266,6 @@ const Home = () => {
         const gameOvered = gameOverMap(bombMap, gameOverBoard, levelchange);
         setGameOver(true);
         setuserClick(gameOvered);
-        // if (timerId !== null) {
-        // clearInterval(timerId); // タイマーをリセット
-        // setTimeCount(0); // タイマー表示をリセット（オプション）
-        // }
-        // setTimerId(null);
       }
     }
   };
@@ -517,6 +478,5 @@ const Home = () => {
     </div>
   );
 };
-// oncontextmenu
 
 export default Home;
