@@ -358,14 +358,15 @@ const Home = () => {
           style={{
             display: 'flex',
             alignItems: 'center',
-            width: levelchange[0] >= 9 ? 37 * levelchange[0] : 350,
+            marginBottom: '10px',
           }}
         >
           <div className={styles.bombnumber}>
             {levelchange[2] - firstMap.flat().filter((cell) => cell === 2).length}
           </div>
-          <div className={styles.face}>
-            <button
+          <button className={styles.face}>
+            <div
+              onClick={handleReload}
               className={styles.sampleStyle}
               style={{
                 backgroundPosition: gameOver
@@ -374,9 +375,8 @@ const Home = () => {
                     ? `-360px 0px`
                     : `-330px 0px`,
               }}
-              onClick={handleReload}
             />
-          </div>
+          </button>
           <div className={styles.timer}>{isTimeCount}</div>
         </div>
         <div
@@ -395,14 +395,16 @@ const Home = () => {
                 {(firstMap[y][x] === 0 || firstMap[y][x] === 10) && (
                   <div
                     className={styles.stone}
-                    style={{ background: color === 1 ? '#ff00000' : 'rgb(0 255 00)' }}
+                    style={{ background: color === 1 ? '#ff00000' : 'rgb(220 220 220);' }}
                     onContextMenu={(event) => rightClick(event, x, y)}
                   />
                 )}
                 {(firstMap[y][x] === 2 || firstMap[y][x] === 50) && (
                   <div
                     className={styles.stone}
-                    style={{ background: color === 50 ? '#f2ff00' : '#ffffff0' }}
+                    style={{
+                      background: color === 50 ? '#ffa0a0' : '#ffffff0',
+                    }}
                   >
                     <div
                       className={styles.sampleStyle}
