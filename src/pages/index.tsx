@@ -262,8 +262,9 @@ const Home = () => {
       }
       if (firstMap[y][x] === 0 && bombMap[y][x] === -1) {
         const gameOverBoard = structuredClone(firstMap);
-        bombMap[y][x] = -100;
+        // firstMap[y][x] = 1;
         const gameOvered = gameOverMap(bombMap, gameOverBoard, levelchange);
+        bombMap[y][x] = -100;
         setGameOver(true);
         setuserClick(gameOvered);
       }
@@ -364,9 +365,8 @@ const Home = () => {
           <div className={styles.bombnumber}>
             {levelchange[2] - firstMap.flat().filter((cell) => cell === 2).length}
           </div>
-          <button className={styles.face}>
+          <button className={styles.face} onClick={handleReload}>
             <div
-              onClick={handleReload}
               className={styles.sampleStyle}
               style={{
                 backgroundPosition: gameOver
@@ -393,23 +393,31 @@ const Home = () => {
                 }}
               >
                 {(firstMap[y][x] === 0 || firstMap[y][x] === 10) && (
-                  <div
+                  <button
                     className={styles.stone}
                     style={{ background: color === 1 ? '#ff00000' : 'rgb(220 220 220);' }}
                     onContextMenu={(event) => rightClick(event, x, y)}
                   />
                 )}
                 {(firstMap[y][x] === 2 || firstMap[y][x] === 50) && (
-                  <div
+                  <button
                     className={styles.stone}
                     style={{
                       background: color === 50 ? '#ffa0a0' : '#ffffff0',
                     }}
+                    onContextMenu={(event) => rightClick(event, x, y)}
                   >
                     <div
                       className={styles.sampleStyle}
-                      style={{ backgroundPosition: `-270px  0px` }}
-                      onContextMenu={(event) => rightClick(event, x, y)}
+                      style={{ backgroundPosition: `-275px  0px` }}
+                    />
+                  </button>
+                )}
+                {bombMap[y][x] === -100 && (
+                  <div style={{ background: '#ff0000' }}>
+                    <div
+                      className={styles.sampleStyle}
+                      style={{ backgroundPosition: `-300px  0px` }}
                     />
                   </div>
                 )}
@@ -463,14 +471,6 @@ const Home = () => {
                     className={styles.sampleStyle}
                     style={{ backgroundPosition: `-210px  0px` }}
                   />
-                )}
-                {bombMap[y][x] === -100 && (
-                  <div className={styles.stone} style={{ background: '#ff0000' }}>
-                    <div
-                      className={styles.sampleStyle}
-                      style={{ backgroundPosition: `-300px  0px` }}
-                    />
-                  </div>
                 )}
               </div>
             )),
