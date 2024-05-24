@@ -14,6 +14,8 @@
   width: 700px;
   height: 50px;
   padding: 0 0.5rem;
+
+  /* background-color: rgb(0 0 0); */
 }
 
 .first {
@@ -21,28 +23,18 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  width: 100px;
+  width: 78px;
   height: 30px;
   padding: 0 0.5rem;
   margin-top: 10px;
   margin-right: 10px;
+  margin-left: 10px;
   background-color: rgb(180 180 180);
   border: solid 3px;
   border-color: #dbdbdb #808080 #808080 #dbdbdb;
 }
 
 .first:active {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  width: 100px;
-  height: 30px;
-  padding: 0 0.5rem;
-  margin-top: 10px;
-  margin-right: 10px;
-  background-color: rgb(180 180 180);
-  border: solid 3px;
   border-color: #808080 #dbdbdb#dbdbdb#808080;
 }
 
@@ -51,7 +43,7 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  width: 100px;
+  width: 78px;
   height: 30px;
   padding: 0 0.5rem;
   margin-top: 10px;
@@ -62,17 +54,6 @@
 }
 
 .second:active {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  width: 100px;
-  height: 30px;
-  padding: 0 0.5rem;
-  margin-top: 10px;
-  margin-right: 10px;
-  background-color: rgb(180 180 180);
-  border: solid 3px;
   border-color: #808080 #dbdbdb#dbdbdb#808080;
 }
 
@@ -81,7 +62,7 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  width: 100px;
+  width: 78px;
   height: 30px;
   padding: 0 0.5rem;
   margin-top: 10px;
@@ -92,17 +73,6 @@
 }
 
 .therd:active {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  width: 100px;
-  height: 30px;
-  padding: 0 0.5rem;
-  margin-top: 10px;
-  margin-right: 10px;
-  background-color: rgb(180 180 180);
-  border: solid 3px;
   border-color: #808080 #dbdbdb#dbdbdb#808080;
 }
 
@@ -111,28 +81,18 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  width: 100px;
+  width: 78px;
   height: 30px;
   padding: 0 0.5rem;
   margin-top: 10px;
-  margin-right: 10px;
+
+  /* margin-right: 10px; */
   background-color: rgb(180 180 180);
   border: solid 3px;
   border-color: #dbdbdb #808080 #808080 #dbdbdb;
 }
 
 .costom:active {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  width: 100px;
-  height: 30px;
-  padding: 0 0.5rem;
-  margin-top: 10px;
-  margin-right: 10px;
-  background-color: rgb(180 180 180);
-  border: solid 3px;
   border-color: #808080 #dbdbdb#dbdbdb#808080;
 }
 
@@ -145,24 +105,13 @@
   height: 30px;
   padding: 0 0.5rem;
   margin-top: 10px;
-  margin-left: 20px;
+  margin-left: 10px;
   background-color: rgb(180 180 180);
   border: solid 3px;
   border-color: #dbdbdb #808080 #808080 #dbdbdb;
 }
 
 .update:active {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  width: 50px;
-  height: 30px;
-  padding: 0 0.5rem;
-  margin-top: 10px;
-  margin-left: 20px;
-  background-color: rgb(180 180 180);
-  border: solid 3px;
   border-color: #808080 #dbdbdb#dbdbdb#808080;
 }
 

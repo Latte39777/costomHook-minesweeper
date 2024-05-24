@@ -287,7 +287,7 @@ const Home = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.levelboard}>
+      <div className={styles.levelboard} style={{ width: isCostom ? 700 : 380 }}>
         <button
           className={styles.first}
           onClick={() => {
@@ -330,7 +330,7 @@ const Home = () => {
               type="number"
               value={val[0]}
               onChange={(e) => hanleChange(0, parseInt(e.target.value))}
-              style={{ width: '50px' }}
+              style={{ width: '50px', marginTop: '15px', marginLeft: '10px' }}
             />
           </div>
           <div>
@@ -338,7 +338,7 @@ const Home = () => {
               type="number"
               value={val[1]}
               onChange={(e) => hanleChange(1, parseInt(e.target.value))}
-              style={{ width: '50px' }}
+              style={{ width: '50px', marginTop: '15px', marginLeft: '10px' }}
             />
           </div>
           <div>
@@ -346,7 +346,7 @@ const Home = () => {
               type="number"
               value={val[2]}
               onChange={(e) => hanleChange(2, parseInt(e.target.value))}
-              style={{ width: '50px' }}
+              style={{ width: '50px', marginTop: '15px', marginLeft: '10px' }}
             />
           </div>
           {val[0] * val[1] >= val[2] && (
