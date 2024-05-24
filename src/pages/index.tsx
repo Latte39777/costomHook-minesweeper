@@ -78,7 +78,13 @@ const numberPlace = (bombMap: number[][], levelchange: number[]) => {
   return bombMap;
 };
 
-const cheackBlank = (x: number, y: number, firstMap: number[][], bombMap: number[][]) => {
+const cheackBlank = (
+  x: number,
+  y: number,
+  firstMap: number[][],
+  bombMap: number[][],
+  levelchange: number[],
+) => {
   if (firstMap[y][x] === 0 && bombMap[y][x] !== 0) {
     console.log('click', y, x);
     firstMap[y][x] = 1;
@@ -90,13 +96,22 @@ const cheackBlank = (x: number, y: number, firstMap: number[][], bombMap: number
         firstMap[y + direction[1]] !== undefined &&
         bombMap[y + direction[1]][x + direction[0]] === 0
       ) {
-        cheackBlank(x + direction[0], y + direction[1], firstMap, bombMap);
+        cheackBlank(x + direction[0], y + direction[1], firstMap, bombMap, levelchange);
       }
       if (
         firstMap[y + direction[1]] !== undefined &&
         bombMap[y + direction[1]][x + direction[0]] !== 0
       ) {
         firstMap[y + direction[1]][x + direction[0]] = 1;
+      }
+    }
+  }
+  if (levelchange[2] === firstMap.flat().filter((cell) => cell !== 1).length) {
+    for (let a = 0; a < levelchange[0]; a++) {
+      for (let b = 0; b < levelchange[1]; b++) {
+        if (bombMap[b][a] === -1) {
+          firstMap[b][a] = 2;
+        }
       }
     }
   }
@@ -257,7 +272,7 @@ const Home = () => {
       }
       if (firstMap[y][x] === 0 && bombMap[y][x] !== -1) {
         const clickBord = structuredClone(firstMap);
-        const cheackedBlank = cheackBlank(x, y, clickBord, bombfinish);
+        const cheackedBlank = cheackBlank(x, y, clickBord, bombfinish, levelchange);
         setuserClick(cheackedBlank);
       }
       if (firstMap[y][x] === 0 && bombMap[y][x] === -1) {
@@ -350,16 +365,13 @@ const Home = () => {
       <div
         className={styles.board}
         style={{
-          width: levelchange[0] >= 9 ? 37 * levelchange[0] + 27 : 350,
-          height: 37 * levelchange[1] + 127,
+          width: levelchange[0] >= 9 ? 38.5 * levelchange[0] + 27 : 350,
+          height: 38.5 * levelchange[1] + 127,
         }}
       >
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            marginBottom: '10px',
-          }}
+          className={styles.information}
+          style={{ width: levelchange[0] >= 9 ? 38.5 * levelchange[0] : 330 }}
         >
           <div className={styles.bombnumber}>
             {levelchange[2] - firstMap.flat().filter((cell) => cell === 2).length}
@@ -380,7 +392,7 @@ const Home = () => {
         </div>
         <div
           className={styles.newboard}
-          style={{ width: 37 * levelchange[0], height: 37 * levelchange[1] }}
+          style={{ width: 37 * levelchange[0] + 10, height: 37 * levelchange[1] + 9 }}
         >
           {bombMap.map((row, y) =>
             row.map((color, x) => (
