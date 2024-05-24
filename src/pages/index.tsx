@@ -392,7 +392,7 @@ const Home = () => {
         </div>
         <div
           className={styles.newboard}
-          style={{ width: 37 * levelchange[0] + 10, height: 37 * levelchange[1] + 9 }}
+          style={{ width: 37 * levelchange[0] + 10, height: 37 * levelchange[1] + 10 }}
         >
           {bombMap.map((row, y) =>
             row.map((color, x) => (
