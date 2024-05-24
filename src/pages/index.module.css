@@ -103,7 +103,7 @@
   margin-top: 10px;
   font-size: 40px;
   color: red;
-  background-color: rgb(180 180 180);
+  background-color: rgb(160 160 160);
   border: 2px solid black;
 }
 
@@ -117,7 +117,7 @@
   margin-right: 10px;
   font-size: 40px;
   color: red;
-  background-color: rgb(180 180 180);
+  background-color: rgb(160 160 160);
   border: 2px solid black;
 }
 
@@ -162,7 +162,7 @@
   justify-content: center;
   width: 37px;
   height: 37px;
-  background-color: rgb(220 220 220);
+  background-color: rgb(190 190 190);
 
   /* border: 10.5px solid rgb(0 0 0); */
 }

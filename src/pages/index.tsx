@@ -223,7 +223,7 @@ const Home = () => {
     setuserInput(bombcleaned);
   };
 
-  const rightClick = (event: React.MouseEvent<HTMLDivElement>, x: number, y: number) => {
+  const rightClick = (event: React.MouseEvent<HTMLButtonElement>, x: number, y: number) => {
     if (
       gameOver !== true &&
       levelchange[2] !== firstMap.flat().filter((cell) => cell !== 1).length
@@ -262,7 +262,6 @@ const Home = () => {
       }
       if (firstMap[y][x] === 0 && bombMap[y][x] === -1) {
         const gameOverBoard = structuredClone(firstMap);
-        // firstMap[y][x] = 1;
         const gameOvered = gameOverMap(bombMap, gameOverBoard, levelchange);
         bombMap[y][x] = -100;
         setGameOver(true);
@@ -394,9 +393,9 @@ const Home = () => {
               >
                 {(firstMap[y][x] === 0 || firstMap[y][x] === 10) && (
                   <button
-                    className={styles.stone}
-                    style={{ background: color === 1 ? '#ff00000' : 'rgb(220 220 220);' }}
                     onContextMenu={(event) => rightClick(event, x, y)}
+                    className={styles.stone}
+                    style={{ background: color === 1 ? '#ff00000' : 'rgb(190 190 190)' }}
                   />
                 )}
                 {(firstMap[y][x] === 2 || firstMap[y][x] === 50) && (
