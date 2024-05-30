@@ -15,11 +15,11 @@ const directions = [
 const create2Darray = (width: number, hight: number, number: number) => {
   const result = [];
   for (let row = 0; row < hight; row++) {
-    const x = [];
+    const resultRow = [];
     for (let rowcount = 0; rowcount < width; rowcount++) {
-      x.push(number);
+      resultRow.push(number);
     }
-    result.push(x);
+    result.push(resultRow);
   }
   return result;
 };
@@ -44,16 +44,16 @@ const bombPlace = (x: number, y: number, bombMap: number[][], levelchange: numbe
     if (!exists && !(x === xs && y === ys)) {
       console.log('ボマー', xs, ys);
       getBombPlace.push([ys, xs]);
-      bombMap[ys][xs] = -1;
+      bombMap[ys][xs] = 11;
     }
   }
   return bombMap;
 };
 
 const numberPlace = (bombMap: number[][], levelchange: number[]) => {
-  let count = 0;
   for (let a = 0; a < levelchange[0]; a++) {
     for (let b = 0; b < levelchange[1]; b++) {
+      let count = 0;
       if (bombMap[b][a] === -2) {
         bombMap[b][a] = 0;
       }
@@ -62,14 +62,14 @@ const numberPlace = (bombMap: number[][], levelchange: number[]) => {
         const dy = direction[1];
         if (
           bombMap[b + direction[1]] !== undefined &&
-          bombMap[b + dy][a + dx] === -1 &&
-          bombMap[b][a] !== -1
+          bombMap[b + dy][a + dx] === 11 &&
+          bombMap[b][a] !== 11
         ) {
           count++;
           continue;
         }
       }
-      if (bombMap[b][a] !== -1) {
+      if (bombMap[b][a] !== 11) {
         bombMap[b][a] = count;
         count = 0;
       }
@@ -87,10 +87,10 @@ const cheackBlank = (
 ) => {
   if (firstMap[y][x] === 0 && bombMap[y][x] !== 0) {
     console.log('click', y, x);
-    firstMap[y][x] = 1;
+    firstMap[y][x] = -30;
   }
-  if ((firstMap[y][x] === 0 || firstMap[y][x] === 2) && bombMap[y][x] === 0) {
-    firstMap[y][x] = 1;
+  if ((firstMap[y][x] === 0 || firstMap[y][x] === 10) && bombMap[y][x] === 0) {
+    firstMap[y][x] = -30;
     for (const direction of directions) {
       if (
         firstMap[y + direction[1]] !== undefined &&
@@ -102,15 +102,15 @@ const cheackBlank = (
         firstMap[y + direction[1]] !== undefined &&
         bombMap[y + direction[1]][x + direction[0]] !== 0
       ) {
-        firstMap[y + direction[1]][x + direction[0]] = 1;
+        firstMap[y + direction[1]][x + direction[0]] = -30;
       }
     }
   }
-  if (levelchange[2] === firstMap.flat().filter((cell) => cell !== 1).length) {
+  if (levelchange[2] === firstMap.flat().filter((cell) => cell !== -30).length) {
     for (let a = 0; a < levelchange[0]; a++) {
       for (let b = 0; b < levelchange[1]; b++) {
-        if (bombMap[b][a] === -1) {
-          firstMap[b][a] = 2;
+        if (bombMap[b][a] === 11) {
+          firstMap[b][a] = 10;
         }
       }
     }
@@ -122,17 +122,28 @@ const gameOverMap = (bombMap: number[][], firstMap: number[][], levelchange: num
   for (let a = 0; a < levelchange[0]; a++) {
     for (let b = 0; b < levelchange[1]; b++) {
       if (firstMap[b][a] === 0) {
-        firstMap[b][a] = 10;
-        if (bombMap[b][a] === -1) {
-          firstMap[b][a] = 1;
+        firstMap[b][a] = 99;
+        if (bombMap[b][a] === 11) {
+          firstMap[b][a] = -30;
         }
       }
-      if (firstMap[b][a] === 2 && bombMap[b][a] !== -1) {
+      if (firstMap[b][a] === 10 && bombMap[b][a] !== 11) {
         bombMap[b][a] = 50;
       }
     }
   }
   return firstMap;
+};
+
+const gameOverFinish = (firstMap: number[][], bombMap: number[][], levelchange: number[]) => {
+  for (let a = 0; a < levelchange[0]; a++) {
+    for (let b = 0; b < levelchange[1]; b++) {
+      if (firstMap[b][a] === -30 && bombMap[b][a] === 11) {
+        return true;
+      }
+    }
+  }
+  // return false;
 };
 
 const Home = () => {
@@ -160,28 +171,29 @@ const Home = () => {
     [-2, -2, -2, -2, -2, -2, -2, -2, -2],
   ]);
 
-  const [gameOver, setGameOver] = useState(false);
   const [levelchange, setlevelchange] = useState([9, 9, 10]);
   const [val, setVal] = useState([30, 10, 15]);
+
   const [isCostom, setCostom] = useState(false);
 
   const [isTimeCount, setTimeCount] = useState(0);
   const [timerId, setTimerId] = useState<number | null>(null); // タイマーID用のState
 
   useEffect(() => {
-    const isGameCleared = levelchange[2] === firstMap.flat().filter((cell) => cell !== 1).length;
-    if (gameOver || isGameCleared) {
+    const isGameCleared = levelchange[2] === firstMap.flat().filter((cell) => cell !== -30).length;
+    if (gameOverFinish(firstMap, bombMap, levelchange) || isGameCleared) {
       if (timerId !== null) {
         clearInterval(timerId);
       }
     }
-  }, [gameOver, firstMap, levelchange, timerId]);
+  }, [bombMap, firstMap, levelchange, timerId]);
 
   const startTimer = () => {
     if (timerId !== null) {
       clearInterval(timerId);
     }
     const id = window.setInterval(() => {
+      console.log('AA');
       setTimeCount((prev) => prev + 1);
     }, 1000);
     setTimerId(id);
@@ -211,6 +223,11 @@ const Home = () => {
       setuserInput(create2Darray(30, 16, -2));
     } else if (level === 3) {
       setCostom(true);
+      setlevelchange([30, 10, 15]);
+      setuserClick(create2Darray(30, 10, 0));
+      setuserInput(create2Darray(30, 10, -2));
+    } else if (level === 4) {
+      setCostom(true);
       setlevelchange([val[0], val[1], val[2]]);
       setuserClick(create2Darray(val[0], val[1], 0));
       setuserInput(create2Darray(val[0], val[1], -2));
@@ -233,21 +250,22 @@ const Home = () => {
     }
     setTimerId(null); // タイマーIDをリセット
     setTimeCount(0);
-    setGameOver(false);
+    // setGameOver(false);
     setuserClick(numbercleaned);
     setuserInput(bombcleaned);
   };
 
   const rightClick = (event: React.MouseEvent<HTMLButtonElement>, x: number, y: number) => {
     if (
-      gameOver !== true &&
-      levelchange[2] !== firstMap.flat().filter((cell) => cell !== 1).length
+      gameOverFinish(firstMap, bombMap, levelchange) !== true &&
+      levelchange[2] !== firstMap.flat().filter((cell) => cell !== -30).length
     ) {
       const rightClicked = structuredClone(firstMap);
       event.preventDefault();
       if (rightClicked[y][x] === 0) {
-        rightClicked[y][x] = 2;
-      } else if (rightClicked[y][x] === 2) {
+        rightClicked[y][x] = 10;
+        console.log(rightClicked);
+      } else if (rightClicked[y][x] === 10) {
         rightClicked[y][x] = 0;
       }
       setuserClick(rightClicked);
@@ -259,8 +277,8 @@ const Home = () => {
   const clickHandler = (x: number, y: number) => {
     if (
       firstMap[y][x] !== 100 &&
-      firstMap[y][x] !== 2 &&
-      levelchange[2] !== firstMap.flat().filter((cell) => cell !== 1).length
+      firstMap[y][x] !== 10 &&
+      levelchange[2] !== firstMap.flat().filter((cell) => cell !== -30).length
     ) {
       if (bombMap[y][x] === -2) {
         startTimer(); // タイマーを開始
@@ -270,16 +288,16 @@ const Home = () => {
         bombfinish = newnumber;
         setuserInput(bombfinish);
       }
-      if (firstMap[y][x] === 0 && bombMap[y][x] !== -1) {
+      if (firstMap[y][x] === 0 && bombMap[y][x] !== 11) {
         const clickBord = structuredClone(firstMap);
         const cheackedBlank = cheackBlank(x, y, clickBord, bombfinish, levelchange);
         setuserClick(cheackedBlank);
       }
-      if (firstMap[y][x] === 0 && bombMap[y][x] === -1) {
+      if (firstMap[y][x] === 0 && bombMap[y][x] === 11) {
         const gameOverBoard = structuredClone(firstMap);
         const gameOvered = gameOverMap(bombMap, gameOverBoard, levelchange);
         bombMap[y][x] = -100;
-        setGameOver(true);
+        // setGameOver(true);
         setuserClick(gameOvered);
       }
     }
@@ -349,12 +367,12 @@ const Home = () => {
               style={{ width: '50px', marginTop: '15px', marginLeft: '10px' }}
             />
           </div>
-          {val[0] * val[1] >= val[2] && (
+          {val[0] * val[1] > val[2] && 0 < val[2] && (
             <button
               className={styles.update}
               onClick={() => {
                 handleReload();
-                levelboard(3);
+                levelboard(4);
               }}
             >
               更新
@@ -366,7 +384,7 @@ const Home = () => {
         className={styles.board}
         style={{
           width: levelchange[0] >= 9 ? 38.5 * levelchange[0] + 27 : 350,
-          height: 38.5 * levelchange[1] + 127,
+          height: 38.5 * levelchange[1] + 117,
         }}
       >
         <div
@@ -374,15 +392,15 @@ const Home = () => {
           style={{ width: levelchange[0] >= 9 ? 38.5 * levelchange[0] : 330 }}
         >
           <div className={styles.bombnumber}>
-            {levelchange[2] - firstMap.flat().filter((cell) => cell === 2).length}
+            {levelchange[2] - firstMap.flat().filter((cell) => cell === 10).length}
           </div>
           <button className={styles.face} onClick={handleReload}>
             <div
               className={styles.sampleStyle}
               style={{
-                backgroundPosition: gameOver
+                backgroundPosition: gameOverFinish(firstMap, bombMap, levelchange)
                   ? `-390px 0px`
-                  : levelchange[2] === firstMap.flat().filter((cell) => cell !== 1).length
+                  : levelchange[2] === firstMap.flat().filter((cell) => cell !== -30).length
                     ? `-360px 0px`
                     : `-330px 0px`,
               }}
@@ -403,20 +421,25 @@ const Home = () => {
                   clickHandler(x, y);
                 }}
               >
-                {(firstMap[y][x] === 0 || firstMap[y][x] === 10) && (
+                {(firstMap[y][x] === 0 || firstMap[y][x] === 10 || firstMap[y][x] === 99) && (
                   <button
+                    className={styles.stone}
                     onContextMenu={(event) => rightClick(event, x, y)}
-                    className={styles.stone}
-                    style={{ background: color === 1 ? '#ff00000' : 'rgb(190 190 190)' }}
-                  />
+                    style={{ background: color === -30 ? '#ff00000' : 'rgb(190 190 190)' }}
+                  >
+                    {/* <div
+                      className={styles.sampleStyle}
+                      style={{ backgroundPosition: color === 10 ? `-275px  0px` : `-500px  0px` }}
+                    /> */}
+                  </button>
                 )}
-                {(firstMap[y][x] === 2 || firstMap[y][x] === 50) && (
+                {(firstMap[y][x] === 10 || firstMap[y][x] === 50) && (
                   <button
                     className={styles.stone}
+                    onContextMenu={(event) => rightClick(event, x, y)}
                     style={{
                       background: color === 50 ? '#ffa0a0' : '#ffffff0',
                     }}
-                    onContextMenu={(event) => rightClick(event, x, y)}
                   >
                     <div
                       className={styles.sampleStyle}
@@ -432,57 +455,10 @@ const Home = () => {
                     />
                   </div>
                 )}
-                {color === -1 && (
-                  <div
-                    className={styles.sampleStyle}
-                    style={{ backgroundPosition: `-300px  0px` }}
-                  />
-                )}
-                {color === 1 && (
-                  <div className={styles.sampleStyle} style={{ backgroundPosition: `0px  0px` }} />
-                )}
-                {color === 2 && (
-                  <div
-                    className={styles.sampleStyle}
-                    style={{ backgroundPosition: `-30px  0px` }}
-                  />
-                )}
-                {color === 3 && (
-                  <div
-                    className={styles.sampleStyle}
-                    style={{ backgroundPosition: `-60px  0px` }}
-                  />
-                )}
-                {color === 4 && (
-                  <div
-                    className={styles.sampleStyle}
-                    style={{ backgroundPosition: `-90px  0px` }}
-                  />
-                )}
-                {color === 5 && (
-                  <div
-                    className={styles.sampleStyle}
-                    style={{ backgroundPosition: `-120px  0px` }}
-                  />
-                )}
-                {color === 6 && (
-                  <div
-                    className={styles.sampleStyle}
-                    style={{ backgroundPosition: `-150px  0px` }}
-                  />
-                )}
-                {color === 7 && (
-                  <div
-                    className={styles.sampleStyle}
-                    style={{ backgroundPosition: `-180px  0px` }}
-                  />
-                )}
-                {color === 8 && (
-                  <div
-                    className={styles.sampleStyle}
-                    style={{ backgroundPosition: `-210px  0px` }}
-                  />
-                )}
+                <div
+                  className={styles.sampleStyle}
+                  style={{ backgroundPosition: `${-30 * (color - 1)}px  0px` }}
+                />
               </div>
             )),
           )}
