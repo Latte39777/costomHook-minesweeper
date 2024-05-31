@@ -38,7 +38,7 @@ const Board: React.FC<Props> = ({
         className={styles.information}
         style={{ width: levelchange[0] >= 9 ? 38.5 * levelchange[0] : 330 }}
       >
-        <div className={styles[2]}>
+        <div className={styles.bombnumber}>
           {levelchange[2] - firstMap.flat().filter((cell) => cell === 10).length}
         </div>
         <button className={styles.face} onClick={handleReload}>
