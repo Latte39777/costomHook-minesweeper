@@ -6,7 +6,7 @@ interface Props {
   levelboard: (level: number) => void;
   hanleChange: (index: number, value: number) => void;
   isCostom: boolean;
-  val: [width: number, hight: number, bombNumber: number];
+  val: number[];
 }
 
 const TopArea: React.FC<Props> = ({ handleReload, levelboard, hanleChange, isCostom, val }) => {

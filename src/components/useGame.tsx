@@ -1,5 +1,4 @@
 import type React from 'react';
-import styles from '../index.module.css';
 import { useState, useEffect } from 'react';
 
 const useGame = () => {
@@ -302,20 +301,27 @@ const useGame = () => {
         setuserClick(gameOvered);
       }
     }
-    return {
-      create2Darray,
-      bombPlace,
-      numberPlace,
-      cheackBlank,
-      gameOverMap,
-      gameOverFinish,
-      startTimer,
-      hanleChange,
-      levelboard,
-      handleReload,
-      rightClick,
-      clickHandler,
-    };
+  };
+
+  return {
+    isCostom,
+    isTimeCount,
+    bombMap,
+    firstMap,
+    val,
+    levelchange,
+    clickHandler,
+    create2Darray,
+    bombPlace,
+    numberPlace,
+    cheackBlank,
+    gameOverMap,
+    gameOverFinish,
+    startTimer,
+    hanleChange,
+    levelboard,
+    handleReload,
+    rightClick,
   };
 };
 export default useGame;

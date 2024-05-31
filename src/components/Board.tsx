@@ -3,12 +3,16 @@ import styles from '../index.module.css';
 
 interface Props {
   handleReload: () => void;
-  gameOverFinish: (firstMap: number[][], bombMap: number[][], levelchange: number[]) => boolean;
+  gameOverFinish: (
+    firstMap: number[][],
+    bombMap: number[][],
+    levelchange: number[],
+  ) => true | undefined;
   clickHandler: (x: number, y: number) => void;
   rightClick: (event: React.MouseEvent<HTMLButtonElement>, x: number, y: number) => void;
-  levelchange: [width: number, hight: number, bombNumber: number];
-  firstMap: [[]];
-  bombMap: [[]];
+  levelchange: number[];
+  firstMap: number[][];
+  bombMap: number[][];
   isTimeCount: number;
 }
 
@@ -22,8 +26,6 @@ const Board: React.FC<Props> = ({
   bombMap,
   isTimeCount,
 }) => {
-  // const [isCostom, setCostom] = useState(false);
-  // const [val, setVal] = useState([30, 10, 15]);
   return (
     <div
       className={styles.board}
