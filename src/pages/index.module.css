@@ -131,7 +131,8 @@
 
 .information {
   display: flex;
-  flex-flow: column;
+
+  /* flex-flow: column; */
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
