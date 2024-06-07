@@ -131,8 +131,6 @@
 
 .information {
   display: flex;
-
-  /* flex-flow: column; */
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
@@ -150,6 +148,7 @@
   justify-content: center;
   width: 100px;
   height: 50px;
+  margin: auto;
   font-size: 40px;
   color: red;
   background-color: rgb(0 0 0);
@@ -163,6 +162,7 @@
   justify-content: center;
   width: 100px;
   height: 50px;
+  margin: auto;
   margin-right: 10px;
   font-size: 40px;
   color: red;
@@ -177,6 +177,7 @@
   justify-content: center;
   width: 50px;
   height: 50px;
+  margin: auto;
   margin-right: 10px;
   background-color: rgb(180 180 180);
   border: solid 5px;

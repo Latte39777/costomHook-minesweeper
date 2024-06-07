@@ -173,9 +173,7 @@ const useGame = () => {
 
   const [levelchange, setlevelchange] = useState([9, 9, 10]);
   const [val, setVal] = useState([30, 10, 15]);
-
   const [isCostom, setCostom] = useState(false);
-
   const [isTimeCount, setTimeCount] = useState(0);
   const [timerId, setTimerId] = useState<number | null>(null); // タイマーID用のState
 
